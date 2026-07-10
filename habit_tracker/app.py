@@ -106,7 +106,10 @@ class ConfirmScreen(ModalScreen[bool]):
 
 
 class WeekSummaryScreen(ModalScreen[None]):
-    """Show completion marks for the last seven days."""
+    """Show the last seven days as a GitHub-style contribution grid."""
+
+    _CONTRIB_EMPTY = "#161b22"
+    _CONTRIB_LEVELS = ("#161b22", "#0e4429", "#006d32", "#26a641", "#39d353")
 
     DEFAULT_CSS = """
     WeekSummaryScreen {
@@ -114,7 +117,8 @@ class WeekSummaryScreen(ModalScreen[None]):
     }
 
     #week-dialog {
-        width: 72;
+        width: auto;
+        min-width: 56;
         height: auto;
         max-height: 80%;
         border: thick $accent;
@@ -142,20 +146,53 @@ class WeekSummaryScreen(ModalScreen[None]):
             yield Static(self._render_summary(), id="week-content")
             yield Static("Press Esc or q to close", classes="hint")
 
-    def _render_summary(self) -> str:
+    def _append_cell(self, text: Text, level: int) -> None:
+        text.append(" ")
+        text.append("  ", style=f"on {self._CONTRIB_LEVELS[level]}")
+
+    def _completion_level(self, count: int, total: int) -> int:
+        if count <= 0 or total <= 0:
+            return 0
+        return min(4, max(1, round(count / total * 4)))
+
+    def _render_summary(self) -> Text | str:
         if not self.habits:
             return "No habits yet."
 
-        header_days = self.habits[0].week_marks()
-        day_labels = " ".join(f"{day.strftime('%a')[0]}" for day, _ in header_days)
-        lines = [f"       {day_labels}"]
+        days = self.habits[0].week_marks()
+        total = len(self.habits)
+        name_width = min(20, max((len(habit.name) for habit in self.habits), default=8))
+        text = Text()
+
+        text.append(" " * (name_width + 1))
+        for day, _ in days:
+            text.append(f" {day.strftime('%a')[:2]} ", style="dim")
+        text.append("\n")
+
+        text.append(" " * (name_width + 1))
+        for day, _ in days:
+            text.append(f" {day.day:>2} ", style="dim")
+        text.append("\n\n")
+
+        text.append("All".ljust(name_width))
+        for day, _ in days:
+            count = sum(1 for habit in self.habits if habit.is_done_on(day))
+            self._append_cell(text, self._completion_level(count, total))
+        text.append("\n\n")
 
         for habit in self.habits:
-            marks = " ".join("✓" if done else "·" for _, done in habit.week_marks())
-            name = habit.name[:18].ljust(18)
-            lines.append(f"{name} {marks}")
+            text.append(habit.name[:name_width].ljust(name_width))
+            for day, _ in days:
+                level = 4 if habit.is_done_on(day) else 0
+                self._append_cell(text, level)
+            text.append("\n")
 
-        return "\n".join(lines)
+        text.append("\nLess ", style="dim")
+        for level in range(len(self._CONTRIB_LEVELS)):
+            self._append_cell(text, level)
+        text.append(" More", style="dim")
+
+        return text
 
     def action_close(self) -> None:
         self.dismiss(None)
