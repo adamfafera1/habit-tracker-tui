@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import shutil
 import sys
 from datetime import date
 from pathlib import Path
@@ -31,9 +32,9 @@ def habits_executable() -> Path | None:
     if venv_habits.exists():
         return venv_habits.resolve()
 
-    for candidate in Path("/opt/homebrew/bin/habits"), Path("/usr/local/bin/habits"):
-        if candidate.exists():
-            return candidate.resolve()
+    found = shutil.which("habits")
+    if found:
+        return Path(found).resolve()
 
     return None
 

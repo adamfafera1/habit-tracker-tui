@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# macOS installer for habit-tracker-tui.
+# On Windows, use: .\scripts\install.ps1
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -8,13 +10,15 @@ SWIFTBAR_PLUGIN_DIR="${HOME}/Desktop/swiftbarplugins"
 
 usage() {
   cat <<EOF
-Install habit-tracker-tui on this machine.
+Install habit-tracker-tui on macOS.
 
 Usage: $(basename "$0") [options]
 
 Options:
   --swiftbar [DIR]   Also install the macOS menu bar plugin (default: ~/Desktop/swiftbarplugins)
   -h, --help         Show this help
+
+On Windows, use: .\\scripts\\install.ps1
 
 After install, run: habits
 EOF

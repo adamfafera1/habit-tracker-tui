@@ -2,9 +2,9 @@
 
 A simple terminal UI for tracking daily habits, built with [Textual](https://textual.textualize.io/).
 
-## Quick install
+## macOS
 
-On a new machine, clone the repo and run:
+### Quick install
 
 ```bash
 git clone <repo-url> habit-tracker-tui
@@ -24,7 +24,7 @@ Restart your terminal if `habits` is not found, then run:
 habits
 ```
 
-For the macOS menu bar widget too:
+For the menu bar widget too:
 
 ```bash
 ./scripts/install.sh --swiftbar
@@ -36,7 +36,7 @@ Use a custom SwiftBar plugin folder if you already have one:
 ./scripts/install.sh --swiftbar ~/path/to/your/swiftbarplugins
 ```
 
-## Manual setup
+### Manual setup
 
 ```bash
 cd habit-tracker-tui
@@ -44,6 +44,142 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
+
+### Install globally (manual)
+
+```bash
+brew install pipx
+pipx ensurepath
+
+cd habit-tracker-tui
+pipx install -e .
+```
+
+Restart your terminal, then `habits` works everywhere.
+
+### Menu bar widget
+
+You can show today's habits in the menu bar with [SwiftBar](https://github.com/swiftbar/SwiftBar). The plugin reads the same `habits.json` file as the TUI, so changes sync both ways.
+
+The installer can set this up for you:
+
+```bash
+./scripts/install.sh --swiftbar
+```
+
+Or follow these steps manually:
+
+#### 1. Install SwiftBar
+
+```bash
+brew install --cask swiftbar
+```
+
+#### 2. Choose a plugin folder
+
+Open SwiftBar. On first launch it asks for a plugin folder — pick or create one, for example:
+
+```bash
+mkdir -p ~/Desktop/swiftbarplugins
+```
+
+Use that same folder in SwiftBar's setup dialog.
+
+#### 3. Install the habits plugin
+
+From the repo root (after setup above):
+
+```bash
+PLUGIN_DIR="$HOME/Desktop/swiftbarplugins"   # use the folder you chose in SwiftBar
+REPO_ROOT="$(pwd)"
+
+cat > "$PLUGIN_DIR/habits.1m.sh" << EOF
+#!/bin/bash
+# <swiftbar.hideFromHistory>true</swiftbar.hideFromHistory>
+
+REPO_ROOT="$REPO_ROOT"
+PYTHON="\${HABITS_PYTHON:-\$REPO_ROOT/.venv/bin/python3}"
+
+if [[ ! -x "\$PYTHON" ]]; then
+  PYTHON="\$(command -v python3)"
+fi
+
+exec "\$PYTHON" "\$REPO_ROOT/scripts/swiftbar_habits.py" "\$@"
+EOF
+
+chmod +x "$PLUGIN_DIR/habits.1m.sh"
+```
+
+If your plugin folder is somewhere else, change `PLUGIN_DIR` to match.
+
+#### 4. Launch and refresh
+
+```bash
+open -a SwiftBar
+```
+
+You should see something like `2/5 habits` or `✅ 2/2` in the menu bar. If not:
+
+1. Click **Swiftbar** in the menu bar
+2. Choose **Refresh all**
+
+Enable **Launch at login** in SwiftBar preferences if you want it to start automatically.
+
+| Area | Behavior |
+|------|----------|
+| Menu bar | `2/5 habits`, or `✅ 2/2` when all habits are done |
+| Dropdown | Each habit with ✅/⬜ and current streak |
+| Click a habit | Toggle it for today |
+| Open habit tracker | Launch the terminal app |
+
+The plugin refreshes every minute (`habits.1m.sh`). Rename to `habits.30s.sh` or `habits.5m.sh` to change the interval.
+
+## Windows
+
+Use [Windows Terminal](https://aka.ms/terminal) for the best experience with Unicode symbols like `✓`.
+
+### Quick install
+
+```powershell
+git clone <repo-url> habit-tracker-tui
+cd habit-tracker-tui
+.\scripts\install.ps1
+```
+
+This will:
+
+- create a local `.venv` and install dependencies
+- install `pipx` if needed
+- install the global `habits` command
+
+Restart PowerShell or Windows Terminal if `habits` is not found, then run:
+
+```powershell
+habits
+```
+
+### Manual setup
+
+```powershell
+cd habit-tracker-tui
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e .
+```
+
+### Install globally (manual)
+
+```powershell
+pip install pipx
+pipx ensurepath
+
+cd habit-tracker-tui
+pipx install -e .
+```
+
+Restart your terminal, then `habits` works everywhere.
+
+The macOS menu bar widget is not available on Windows.
 
 ## Run
 
@@ -57,20 +193,6 @@ Or without installing globally:
 python -m habit_tracker.app
 ```
 
-## Install globally (manual)
-
-To run `habits` from any terminal without activating the venv, install with [pipx](https://github.com/pypa/pipx):
-
-```bash
-brew install pipx
-pipx ensurepath
-
-cd habit-tracker-tui
-pipx install -e .
-```
-
-Restart your terminal, then `habits` works everywhere.
-
 ## Features
 
 - Daily habit list with current streak and best streak
@@ -79,7 +201,7 @@ Restart your terminal, then `habits` works everywhere.
 - Completed habits highlighted in green
 - Weekly summary with a GitHub-style contribution grid (`w`)
 - CSV export of all completions (`e`)
-- macOS menu bar widget via SwiftBar (optional)
+- macOS menu bar widget via SwiftBar (macOS only, optional)
 
 ## Controls
 
@@ -121,88 +243,12 @@ The weekly view shows a GitHub-style grid for the last 7 days: one row per habit
 
 ## Data
 
-Habits are saved to `~/.habit-tracker-tui/habits.json`.
+Habits are saved to:
 
-CSV exports are written to `~/.habit-tracker-tui/habits-export.csv`.
+- macOS / Linux: `~/.habit-tracker-tui/habits.json`
+- Windows: `%USERPROFILE%\.habit-tracker-tui\habits.json`
 
-## Menu bar widget (macOS)
-
-You can show today's habits in the menu bar with [SwiftBar](https://github.com/swiftbar/SwiftBar). The plugin reads the same `habits.json` file as the TUI, so changes sync both ways.
-
-The installer can set this up for you:
-
-```bash
-./scripts/install.sh --swiftbar
-```
-
-Or follow these steps manually:
-
-### 1. Install SwiftBar
-
-```bash
-brew install --cask swiftbar
-```
-
-### 2. Choose a plugin folder
-
-Open SwiftBar. On first launch it asks for a plugin folder — pick or create one, for example:
-
-```bash
-mkdir -p ~/Desktop/swiftbarplugins
-```
-
-Use that same folder in SwiftBar's setup dialog.
-
-### 3. Install the habits plugin
-
-From the repo root (after setup above):
-
-```bash
-PLUGIN_DIR="$HOME/Desktop/swiftbarplugins"   # use the folder you chose in SwiftBar
-REPO_ROOT="$(pwd)"
-
-cat > "$PLUGIN_DIR/habits.1m.sh" << EOF
-#!/bin/bash
-# <swiftbar.hideFromHistory>true</swiftbar.hideFromHistory>
-
-REPO_ROOT="$REPO_ROOT"
-PYTHON="\${HABITS_PYTHON:-\$REPO_ROOT/.venv/bin/python3}"
-
-if [[ ! -x "\$PYTHON" ]]; then
-  PYTHON="\$(command -v python3)"
-fi
-
-exec "\$PYTHON" "\$REPO_ROOT/scripts/swiftbar_habits.py" "\$@"
-EOF
-
-chmod +x "$PLUGIN_DIR/habits.1m.sh"
-```
-
-If your plugin folder is somewhere else, change `PLUGIN_DIR` to match.
-
-### 4. Launch and refresh
-
-```bash
-open -a SwiftBar
-```
-
-You should see something like `2/5 habits` or `✅ 2/2` in the menu bar. If not:
-
-1. Click **Swiftbar** in the menu bar
-2. Choose **Refresh all**
-
-Enable **Launch at login** in SwiftBar preferences if you want it to start automatically.
-
-### What you get
-
-| Area | Behavior |
-|------|----------|
-| Menu bar | `2/5 habits`, or `✅ 2/2` when all habits are done |
-| Dropdown | Each habit with ✅/⬜ and current streak |
-| Click a habit | Toggle it for today |
-| Open habit tracker | Launch the terminal app |
-
-The plugin refreshes every minute (`habits.1m.sh`). Rename to `habits.30s.sh` or `habits.5m.sh` to change the interval.
+CSV exports are written alongside the data file as `habits-export.csv`.
 
 ## Try with Cursor
 
