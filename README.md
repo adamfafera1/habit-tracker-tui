@@ -250,11 +250,5 @@ Habits are saved to:
 
 CSV exports are written alongside the data file as `habits-export.csv`.
 
-## Try with Cursor
 
-Good follow-up prompts:
-
-- "Add monthly stats view"
-- "Sort habits by streak"
-- "Import habits from CSV"
-- "Add habit categories or tags"
+<sub>made with help of cursor</sub>
