@@ -2,7 +2,41 @@
 
 A simple terminal UI for tracking daily habits, built with [Textual](https://textual.textualize.io/).
 
-## Setup
+## Quick install
+
+On a new machine, clone the repo and run:
+
+```bash
+git clone <repo-url> habit-tracker-tui
+cd habit-tracker-tui
+./scripts/install.sh
+```
+
+This will:
+
+- create a local `.venv` and install dependencies
+- install `pipx` if needed
+- install the global `habits` command
+
+Restart your terminal if `habits` is not found, then run:
+
+```bash
+habits
+```
+
+For the macOS menu bar widget too:
+
+```bash
+./scripts/install.sh --swiftbar
+```
+
+Use a custom SwiftBar plugin folder if you already have one:
+
+```bash
+./scripts/install.sh --swiftbar ~/path/to/your/swiftbarplugins
+```
+
+## Manual setup
 
 ```bash
 cd habit-tracker-tui
@@ -17,13 +51,13 @@ pip install -e .
 habits
 ```
 
-Or without installing:
+Or without installing globally:
 
 ```bash
 python -m habit_tracker.app
 ```
 
-## Install globally
+## Install globally (manual)
 
 To run `habits` from any terminal without activating the venv, install with [pipx](https://github.com/pypa/pipx):
 
@@ -53,6 +87,14 @@ Habits are saved to `~/.habit-tracker-tui/habits.json`.
 ## Menu bar widget (macOS)
 
 You can show today's habits in the menu bar with [SwiftBar](https://github.com/swiftbar/SwiftBar). The plugin reads the same `habits.json` file as the TUI, so changes sync both ways.
+
+The installer can set this up for you:
+
+```bash
+./scripts/install.sh --swiftbar
+```
+
+Or follow these steps manually:
 
 ### 1. Install SwiftBar
 
