@@ -71,18 +71,59 @@ pipx install -e .
 
 Restart your terminal, then `habits` works everywhere.
 
+## Features
+
+- Daily habit list with current streak and best streak
+- Toggle habits for today with one keypress
+- Header showing today's date, completion count, and top streak
+- Completed habits highlighted in green
+- Weekly summary with a GitHub-style contribution grid (`w`)
+- CSV export of all completions (`e`)
+- macOS menu bar widget via SwiftBar (optional)
+
 ## Controls
+
+Use arrow keys to move between habits in the main table.
+
+### Main screen
 
 | Key | Action |
 |-----|--------|
 | `a` | Add a new habit |
-| `Space` | Toggle selected habit for today |
+| `Space` / `Enter` | Toggle selected habit for today |
+| `r` | Rename selected habit |
 | `d` | Delete selected habit |
+| `w` | Open weekly summary (last 7 days) |
+| `e` | Export completions to CSV |
 | `q` | Quit |
+
+### Prompts (add / rename)
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Save |
+| `Esc` | Cancel |
+
+### Delete confirmation
+
+| Key | Action |
+|-----|--------|
+| `y` | Confirm delete |
+| `n` / `Esc` | Cancel |
+
+### Weekly summary
+
+| Key | Action |
+|-----|--------|
+| `Esc` / `q` | Close |
+
+The weekly view shows a GitHub-style grid for the last 7 days: one row per habit, plus an **All** row with shaded squares based on how many habits were completed that day.
 
 ## Data
 
 Habits are saved to `~/.habit-tracker-tui/habits.json`.
+
+CSV exports are written to `~/.habit-tracker-tui/habits-export.csv`.
 
 ## Menu bar widget (macOS)
 
@@ -167,7 +208,7 @@ The plugin refreshes every minute (`habits.1m.sh`). Rename to `habits.30s.sh` or
 
 Good follow-up prompts:
 
-- "Add a weekly summary view"
-- "Color completed rows green"
-- "Show longest streak in the header"
-- "Export habits to CSV"
+- "Add monthly stats view"
+- "Sort habits by streak"
+- "Import habits from CSV"
+- "Add habit categories or tags"
